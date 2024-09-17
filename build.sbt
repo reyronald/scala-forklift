@@ -16,7 +16,7 @@ lazy val coreDependencies = libraryDependencies ++= List(
 lazy val slickDependencies = List(
   "com.typesafe.slick" %% "slick" % slickVersion,
   "com.typesafe.slick" %% "slick-codegen" % slickVersion,
-  "io.github.nafg" %% "slick-migration-api" % "0.8.0",
+  "io.github.nafg.slick-migration-api" %% "slick-migration-api" % "0.8.0",
   "org.scala-lang.modules" %% "scala-collection-compat" % "2.8.1"
 )
 
@@ -45,26 +45,29 @@ lazy val commonSettings = Seq(
   resolvers += Resolver.jcenterRepo,
   publishMavenStyle := true,
   publishArtifact in Test := false,
-  repoKind := { if (version.value.trim.endsWith("SNAPSHOT")) "snapshots"
-                else "releases" },
-  publishTo := { repoKind.value match {
-    case "snapshots" => Some("snapshots" at
-        "https://oss.sonatype.org/content/repositories/snapshots")
-    case "releases" =>  Some("releases"  at
-        "https://oss.sonatype.org/service/local/staging/deploy/maven2")
-  }},
+  repoKind := { 
+    if (version.value.trim.endsWith("SNAPSHOT")) 
+      "snapshots"
+    else 
+      "releases"
+  },
+  publishTo := {
+    Some(Resolver.file(repoKind.value, new File("./lib/scala-forklift")))
+  },
   credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
   pomExtra := (
     <scm>
       <url>git@github.com:lastland/scala-forklift.git</url>
       <connection>scm:git:git@github.com:lastland/scala-forklift.git</connection>
-      </scm>
+    </scm>
       <developers>
-      <developer>
-      <id>lastland</id>
-      <name>Yao Li</name>
-      </developer>
-      </developers>))
+        <developer>
+          <id>lastland</id>
+          <name>Yao Li</name>
+        </developer>
+      </developers>
+  )
+)
 
 // Derby is running is secured mode since version 10.12.1.1, so security manager must be disabled for tests  
 // https://stackoverflow.com/questions/48008343/sbt-test-does-not-work-for-spark-test
